@@ -1,0 +1,8 @@
+dependencies {
+    implementation 'io.minio:minio:latest.release'
+    implementation "org.springframework.boot:spring-boot-autoconfigure:latest.release"
+    compileOnly "org.springframework.boot:spring-boot-configuration-processor:latest.release"
+    compileOnly 'jakarta.annotation:jakarta.annotation-api:1.3.5'
+    compileOnly 'org.projectlombok:lombok:latest.release'
+    annotationProcessor 'org.projectlombok:lombok:latest.release'
+}

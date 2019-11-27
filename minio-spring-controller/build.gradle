@@ -1,0 +1,14 @@
+dependencies {
+    implementation project(':minio-spring-boot-starter')
+    implementation 'com.github.120011676:ladybird-spring-boot-web-helper:latest.release'
+    compileOnly project(":minio-spring-boot-autoconfigure")
+    compileOnly 'io.minio:minio:latest.release'
+    compileOnly 'javax.servlet:javax.servlet-api:latest.release'
+    compileOnly 'org.springframework:spring-context:latest.release'
+    compileOnly 'org.springframework:spring-web:latest.release'
+    compileOnly 'jakarta.annotation:jakarta.annotation-api:latest.release'
+    compileOnly 'org.projectlombok:lombok:latest.release'
+    annotationProcessor 'org.projectlombok:lombok:latest.release'
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api:latest.release'
+
+}

@@ -4,3 +4,28 @@
  * This is a general purpose Gradle build.
  * Learn how to create Gradle builds at https://guides.gradle.org/creating-new-gradle-builds
  */
+
+plugins {
+    id "base"
+}
+
+description = 'minio helper'
+
+allprojects {
+    group = 'com.github.120011676'
+    version = '0.0.1'
+
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+}
+
+subprojects {
+    apply plugin: 'java-library'
+
+    sourceCompatibility = 1.8
+}
