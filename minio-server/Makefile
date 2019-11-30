@@ -1,0 +1,8 @@
+VERSION?=1.0.0
+PROJECT_NAME=minio-server
+DOCKER_HOSTNAME?=120011676
+DOCKER_IMAGE_NAME=${DOCKER_HOSTNAME}/${PROJECT_NAME}
+image:
+	docker build -t ${DOCKER_IMAGE_NAME} .
+push: image
+	docker push ${DOCKER_IMAGE_NAME}
