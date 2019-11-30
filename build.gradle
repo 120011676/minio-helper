@@ -44,7 +44,7 @@ subprojects {
                 pom {
                     name = 'vine'
                     description = 'credential helper'
-                    url = 'https://github.com/120011676/credential-helper'
+                    url = 'https://github.com/120011676/minio-helper'
                     licenses {
                         license {
                             name = 'The MIT License (MIT)'
@@ -59,9 +59,9 @@ subprojects {
                         }
                     }
                     scm {
-                        connection = 'git@github.com:120011676/credential-helper.git'
-                        developerConnection = 'git@github.com:120011676/credential-helper.git'
-                        url = 'https://github.com/120011676/credential-helper'
+                        connection = 'git@github.com:120011676/minio-helper.git'
+                        developerConnection = 'git@github.com:120011676/minio-helper.git'
+                        url = 'https://github.com/120011676/minio-helper'
                     }
                 }
             }
