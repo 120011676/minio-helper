@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import io.minio.MinioClient;
 import io.minio.ObjectStat;
 import io.minio.errors.*;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
