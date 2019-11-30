@@ -85,7 +85,7 @@ public class MinioController {
         return ResponseEntity
                 .ok()
                 .headers(headers)
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .contentType(MediaType.parseMediaType("application/force-download"))
                 .body(this.minioClient.getObject(this.minIOProperties.getBucket(), filename));
     }
 }
