@@ -1,0 +1,16 @@
+spring:
+  redis:
+    host: ${REDIS_HOST:111.9.116.136}
+    port: ${REDIS_PORT:6379}
+    database: ${REDIS_DATABASE:0}
+    password: ${REDIS_PASSWORD:=[;._PL<0okm}
+    timeout: ${REDIS_TIMEOUT:5s}
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+ladybird:
+  restful-exception:
+    messages:
+      upload_no_file:
+        httpStatus: 400
+        message: 缺少上传文件

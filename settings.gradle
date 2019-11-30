@@ -8,7 +8,8 @@
  */
 
 rootProject.name = 'minio-helper'
+
 include 'minio-spring-boot-autoconfigure'
 include 'minio-spring-boot-starter'
 include 'minio-spring-controller'
-
+include 'minio-server'

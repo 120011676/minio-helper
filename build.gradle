@@ -26,6 +26,59 @@ allprojects {
 
 subprojects {
     apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
 
-    sourceCompatibility = 1.8
+    sourceCompatibility = 13
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+
+                pom {
+                    name = 'vine'
+                    description = 'credential helper'
+                    url = 'https://github.com/120011676/credential-helper'
+                    licenses {
+                        license {
+                            name = 'The MIT License (MIT)'
+                            url = 'https://mit-license.org'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = '120011676'
+                            name = 'Say.li'
+                            email = '120011676@qq.com'
+                        }
+                    }
+                    scm {
+                        connection = 'git@github.com:120011676/credential-helper.git'
+                        developerConnection = 'git@github.com:120011676/credential-helper.git'
+                        url = 'https://github.com/120011676/credential-helper'
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                credentials {
+                    username = maven_username
+                    password = maven_password
+                }
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.mavenJava
+    }
 }
