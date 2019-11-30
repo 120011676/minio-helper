@@ -96,7 +96,7 @@ public class MinioController {
         if (filenameArray.length > 1) {
             saveFilename = filenameArray[1];
         }
-        List<String> filenames = objectStat.httpHeaders().get("filename");
+        List<String> filenames = objectStat.httpHeaders().get("x-amz-meta-filename");
         if (filenames != null && !filenames.isEmpty()) {
             saveFilename = filenames.get(0);
         }
