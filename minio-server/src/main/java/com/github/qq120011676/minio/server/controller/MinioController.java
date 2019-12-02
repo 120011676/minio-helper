@@ -2,6 +2,7 @@ package com.github.qq120011676.minio.server.controller;
 
 import com.github.qq120011676.ladybird.web.exception.RestfulExceptionHelper;
 import com.github.qq120011676.minio.properties.MinIOProperties;
+import com.github.qq120011676.minio.server.config.AppConfig;
 import com.github.qq120011676.minio.server.entity.DownloadViewEntity;
 import com.github.qq120011676.minio.server.entity.UploadViewEntity;
 import io.minio.MinioClient;
@@ -11,6 +12,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.xmlpull.v1.XmlPullParserException;
@@ -31,6 +33,8 @@ public class MinioController {
     private MinioClient minioClient;
     @Resource
     private MinIOProperties minIOProperties;
+    @Resource
+    private AppConfig appConfig;
 
     @PostMapping("upload")
     public UploadViewEntity upload(MultipartFile file) throws IOException, XmlPullParserException, NoSuchAlgorithmException, InvalidKeyException, InvalidArgumentException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException {
@@ -64,6 +68,10 @@ public class MinioController {
         this.minioClient.putObject(this.minIOProperties.getBucket(), objectName, file.getInputStream(), file.getSize(), map, null, file.getContentType());
         UploadViewEntity uploadView = new UploadViewEntity();
         uploadView.setFilename(objectName);
+        if (StringUtils.hasText(this.appConfig.getBaseUrl())) {
+            uploadView.setViewUrl(MessageFormat.format("{0}/file/view/{1}", this.appConfig.getBaseUrl(), objectName));
+            uploadView.setDownloadUrl(MessageFormat.format("{0}/file/download/{1}", this.appConfig.getBaseUrl(), objectName));
+        }
         return uploadView;
     }
 
