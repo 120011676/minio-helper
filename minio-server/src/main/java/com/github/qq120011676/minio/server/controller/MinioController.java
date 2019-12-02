@@ -1,5 +1,6 @@
 package com.github.qq120011676.minio.server.controller;
 
+import com.github.qq120011676.ladybird.web.conntroller.ControllerHelper;
 import com.github.qq120011676.ladybird.web.exception.RestfulExceptionHelper;
 import com.github.qq120011676.minio.properties.MinIOProperties;
 import com.github.qq120011676.minio.server.config.AppConfig;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.xmlpull.v1.XmlPullParserException;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -68,10 +70,15 @@ public class MinioController {
         this.minioClient.putObject(this.minIOProperties.getBucket(), objectName, file.getInputStream(), file.getSize(), map, null, file.getContentType());
         UploadViewEntity uploadView = new UploadViewEntity();
         uploadView.setFilename(objectName);
+        HttpServletRequest request = ControllerHelper.getHttpServletRequest();
+        StringBuffer url = request.getRequestURL();
+        String uri = request.getRequestURI();
+        String baseUrl = url.substring(0, url.length() - uri.length());
         if (StringUtils.hasText(this.appConfig.getBaseUrl())) {
-            uploadView.setViewUrl(MessageFormat.format("{0}/file/view/{1}", this.appConfig.getBaseUrl(), objectName));
-            uploadView.setDownloadUrl(MessageFormat.format("{0}/file/download/{1}", this.appConfig.getBaseUrl(), objectName));
+            baseUrl = this.appConfig.getBaseUrl();
         }
+        uploadView.setViewUrl(MessageFormat.format("{0}/file/view/{1}", baseUrl, objectName));
+        uploadView.setDownloadUrl(MessageFormat.format("{0}/file/download/{1}", baseUrl, objectName));
         return uploadView;
     }
 
