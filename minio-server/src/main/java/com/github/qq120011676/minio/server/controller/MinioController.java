@@ -2,8 +2,8 @@ package com.github.qq120011676.minio.server.controller;
 
 import com.github.qq120011676.ladybird.web.exception.RestfulExceptionHelper;
 import com.github.qq120011676.minio.properties.MinIOProperties;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.github.qq120011676.minio.server.entity.DownloadViewEntity;
+import com.github.qq120011676.minio.server.entity.UploadViewEntity;
 import io.minio.MinioClient;
 import io.minio.ObjectStat;
 import io.minio.errors.*;
@@ -20,10 +20,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("file")
@@ -36,12 +33,12 @@ public class MinioController {
     private MinIOProperties minIOProperties;
 
     @PostMapping("upload")
-    public String upload(MultipartFile file) throws IOException, XmlPullParserException, NoSuchAlgorithmException, InvalidKeyException, InvalidArgumentException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException {
-        return this.minioUpload(file).toString();
+    public UploadViewEntity upload(MultipartFile file) throws IOException, XmlPullParserException, NoSuchAlgorithmException, InvalidKeyException, InvalidArgumentException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException {
+        return this.minioUpload(file);
     }
 
     @PostMapping("uploads")
-    public String uploads(MultipartFile[] files) throws IOException, XmlPullParserException, NoSuchAlgorithmException, InvalidKeyException, InvalidArgumentException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException {
+    public List<UploadViewEntity> uploads(MultipartFile[] files) throws IOException, XmlPullParserException, NoSuchAlgorithmException, InvalidKeyException, InvalidArgumentException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException {
         if (files == null) {
             throw this.restfulExceptionHelper.getRestfulRuntimeException("upload_no_file");
         }
@@ -50,14 +47,14 @@ public class MinioController {
                 throw this.restfulExceptionHelper.getRestfulRuntimeException("upload_no_file");
             }
         }
-        JsonArray jsonArray = new JsonArray();
+        List<UploadViewEntity> uploadViews = new ArrayList<>();
         for (MultipartFile file : files) {
-            jsonArray.add(this.minioUpload(file));
+            uploadViews.add(this.minioUpload(file));
         }
-        return jsonArray.toString();
+        return uploadViews;
     }
 
-    private JsonObject minioUpload(MultipartFile file) throws IOException, XmlPullParserException, NoSuchAlgorithmException, InvalidKeyException, InvalidArgumentException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException {
+    private UploadViewEntity minioUpload(MultipartFile file) throws IOException, XmlPullParserException, NoSuchAlgorithmException, InvalidKeyException, InvalidArgumentException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException {
         if (file.isEmpty()) {
             throw this.restfulExceptionHelper.getRestfulRuntimeException("upload_no_file");
         }
@@ -65,9 +62,9 @@ public class MinioController {
         map.put("filename", file.getOriginalFilename());
         String objectName = MessageFormat.format("{0}_{1}", UUID.randomUUID().toString(), file.getOriginalFilename());
         this.minioClient.putObject(this.minIOProperties.getBucket(), objectName, file.getInputStream(), file.getSize(), map, null, file.getContentType());
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("filename", objectName);
-        return jsonObject;
+        UploadViewEntity uploadView = new UploadViewEntity();
+        uploadView.setFilename(objectName);
+        return uploadView;
     }
 
     @RequestMapping("view/{filename}")
@@ -81,11 +78,11 @@ public class MinioController {
     }
 
     @RequestMapping("downloadByUrl/{filename}")
-    public String downloadByUrl(@PathVariable String filename) throws IOException, InvalidKeyException, NoSuchAlgorithmException, InsufficientDataException, InvalidExpiresRangeException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, XmlPullParserException, ErrorResponseException {
+    public DownloadViewEntity downloadByUrl(@PathVariable String filename) throws IOException, InvalidKeyException, NoSuchAlgorithmException, InsufficientDataException, InvalidExpiresRangeException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, XmlPullParserException, ErrorResponseException {
         String url = this.minioClient.presignedGetObject(this.minIOProperties.getBucket(), filename);
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("url", url);
-        return jsonObject.toString();
+        DownloadViewEntity downloadView = new DownloadViewEntity();
+        downloadView.setUrl(url);
+        return downloadView;
     }
 
     @GetMapping("download/{filename}")
