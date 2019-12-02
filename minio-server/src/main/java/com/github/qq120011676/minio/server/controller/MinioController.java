@@ -40,7 +40,7 @@ public class MinioController {
 
     @PostMapping("upload")
     public UploadViewEntity upload(MultipartFile file) throws IOException, XmlPullParserException, NoSuchAlgorithmException, InvalidKeyException, InvalidArgumentException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException {
-        return this.minioUpload(file);
+        return this.minioUpload(file, "/file/upload");
     }
 
     @PostMapping("uploads")
@@ -55,12 +55,12 @@ public class MinioController {
         }
         List<UploadViewEntity> uploadViews = new ArrayList<>();
         for (MultipartFile file : files) {
-            uploadViews.add(this.minioUpload(file));
+            uploadViews.add(this.minioUpload(file, "/file/uploads"));
         }
         return uploadViews;
     }
 
-    private UploadViewEntity minioUpload(MultipartFile file) throws IOException, XmlPullParserException, NoSuchAlgorithmException, InvalidKeyException, InvalidArgumentException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException {
+    private UploadViewEntity minioUpload(MultipartFile file, String uri) throws IOException, XmlPullParserException, NoSuchAlgorithmException, InvalidKeyException, InvalidArgumentException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, InsufficientDataException, ErrorResponseException {
         if (file.isEmpty()) {
             throw this.restfulExceptionHelper.getRestfulRuntimeException("upload_no_file");
         }
@@ -72,7 +72,6 @@ public class MinioController {
         uploadView.setFilename(objectName);
         HttpServletRequest request = ControllerHelper.getHttpServletRequest();
         StringBuffer url = request.getRequestURL();
-        String uri = request.getRequestURI();
         String baseUrl = url.substring(0, url.length() - uri.length());
         if (StringUtils.hasText(this.appConfig.getBaseUrl())) {
             baseUrl = this.appConfig.getBaseUrl();
