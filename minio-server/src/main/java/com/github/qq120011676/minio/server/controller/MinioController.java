@@ -21,6 +21,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
@@ -65,7 +67,7 @@ public class MinioController {
             throw this.restfulExceptionHelper.getRestfulRuntimeException("upload_no_file");
         }
         Map<String, String> map = new HashMap<>();
-        map.put("filename", file.getOriginalFilename());
+        map.put("filename", URLEncoder.encode(Objects.requireNonNull(file.getOriginalFilename()), StandardCharsets.UTF_8));
         String objectName = MessageFormat.format("{0}_{1}", UUID.randomUUID().toString(), file.getOriginalFilename());
         this.minioClient.putObject(this.minIOProperties.getBucket(), objectName, file.getInputStream(), file.getSize(), map, null, file.getContentType());
         UploadViewEntity uploadView = new UploadViewEntity();
