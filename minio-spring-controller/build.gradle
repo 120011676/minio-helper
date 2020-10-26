@@ -8,6 +8,7 @@ dependencies {
     compileOnly 'org.springframework:spring-web:latest.release'
     compileOnly 'jakarta.annotation:jakarta.annotation-api:latest.release'
     compileOnly 'org.projectlombok:lombok:latest.release'
+    compileOnly 'jakarta.annotation:jakarta.annotation-api:+'
     annotationProcessor 'org.projectlombok:lombok:latest.release'
     annotationProcessor 'jakarta.annotation:jakarta.annotation-api:latest.release'
 

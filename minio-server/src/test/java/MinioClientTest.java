@@ -1,8 +1,8 @@
-import io.minio.MinioClient;
-import io.minio.ObjectStat;
+import io.minio.*;
 import io.minio.errors.*;
-import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -11,22 +11,25 @@ import java.util.Map;
 import java.util.UUID;
 
 public class MinioClientTest {
-    public static void main(String[] args) throws InvalidPortException, InvalidEndpointException, IOException, InvalidKeyException, NoSuchAlgorithmException, InsufficientDataException, InvalidResponseException, InternalException, NoResponseException, InvalidBucketNameException, XmlPullParserException, ErrorResponseException, RegionConflictException, InvalidArgumentException, InvalidExpiresRangeException {
-        String url = "http://111.9.116.135:9000/";
+    public static void main(String[] args) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException, RegionConflictException, InvalidExpiresRangeException {
+        String url = "http://10.4.1.166:9000/";
         String ak = "minio";
         String sk = "=[;._PL<0okm";
         String bucket = "industry";
         String filepath = "/Users/say/Downloads/";
         String filename = "7704D1657FAA63310DA126475EE320AF.png";
-        MinioClient minioClient = new MinioClient(url, ak, sk);
-        if (!minioClient.bucketExists(bucket)) {
-            minioClient.makeBucket(bucket);
+        MinioClient minioClient = MinioClient.builder().endpoint(url).credentials(ak, sk).build();
+        if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build())) {
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
         }
         String objectName = UUID.randomUUID().toString();
         Map<String, String> map = new HashMap<>();
         map.put("filename", filename);
-        minioClient.putObject(bucket, objectName, filepath + filename, null, map, null, null);
-        String presignedUrl = minioClient.presignedGetObject(bucket, objectName);
+        File file = new File(filepath + filename);
+        try (FileInputStream fin = new FileInputStream(file)) {
+            minioClient.putObject(PutObjectArgs.builder().bucket(bucket).object(objectName).extraHeaders(map).stream(fin, file.length(), -1).build());
+        }
+        String presignedUrl = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket(bucket).object(objectName).build());
         System.out.println(presignedUrl);
         System.out.println(minioClient.getObjectUrl(bucket, objectName));
         ObjectStat objectStat = minioClient.statObject(bucket, objectName);
