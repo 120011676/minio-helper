@@ -29,7 +29,7 @@ subprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
 
-    sourceCompatibility = 13
+    sourceCompatibility = 15
 
     java {
         withJavadocJar()
