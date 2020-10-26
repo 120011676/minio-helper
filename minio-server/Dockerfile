@@ -1,4 +1,4 @@
-FROM openjdk:13-alpine
+FROM openjdk:15-alpine
 MAINTAINER Say.li <120011676@qq.com>
 LABEL maintainer="Say.li <120011676@qq.com>"
 ENV TZ Asia/Shanghai
