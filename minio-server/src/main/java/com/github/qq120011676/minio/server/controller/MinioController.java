@@ -20,6 +20,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -76,6 +77,7 @@ public class MinioController {
             this.minioClient.putObject(builder.contentType(file.getContentType()).extraHeaders(map).object(objectName).stream(in, file.getSize(), -1).build());
         }
         UploadViewEntity uploadView = new UploadViewEntity();
+        objectName = URLEncoder.encode(objectName, StandardCharsets.UTF_8);
         uploadView.setFilename(objectName);
         HttpServletRequest request = ControllerHelper.getHttpServletRequest();
         StringBuffer url = request.getRequestURL();
@@ -88,13 +90,19 @@ public class MinioController {
         return uploadView;
     }
 
-    @RequestMapping("view/{filename}")
-    public ResponseEntity<InputStreamResource> view(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
+    private ObjectStat statObject(String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
+        filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
         var builder = StatObjectArgs.builder();
         if (StringUtils.hasText(this.minIOProperties.getBucket())) {
             builder.bucket(this.minIOProperties.getBucket());
         }
-        ObjectStat objectStat = this.minioClient.statObject(builder.object(filename).build());
+        return this.minioClient.statObject(builder.object(filename).build());
+    }
+
+    @RequestMapping("view/{filename}")
+    public ResponseEntity<InputStreamResource> view(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
+        filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
+        var objectStat = this.statObject(filename);
         var builderGet = GetObjectArgs.builder();
         if (StringUtils.hasText(this.minIOProperties.getBucket())) {
             builderGet.bucket(this.minIOProperties.getBucket());
@@ -108,6 +116,7 @@ public class MinioController {
 
     @RequestMapping("downloadByUrl/{filename}")
     public DownloadViewEntity downloadByUrl(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, InvalidExpiresRangeException, ServerException, InternalException, NoSuchAlgorithmException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
+        filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
         var builder = GetPresignedObjectUrlArgs.builder();
         if (StringUtils.hasText(this.minIOProperties.getBucket())) {
             builder.bucket(this.minIOProperties.getBucket());
@@ -120,11 +129,8 @@ public class MinioController {
 
     @GetMapping("download/{filename}")
     public ResponseEntity<InputStreamResource> download(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
-        var builder = StatObjectArgs.builder();
-        if (StringUtils.hasText(this.minIOProperties.getBucket())) {
-            builder.bucket(this.minIOProperties.getBucket());
-        }
-        ObjectStat objectStat = this.minioClient.statObject(builder.object(filename).build());
+        filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
+        var objectStat = this.statObject(filename);
         String saveFilename = objectStat.name();
         String[] filenameArray = filename.split("_", 2);
         if (filenameArray.length > 1) {

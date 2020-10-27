@@ -24,7 +24,7 @@ public class MinioControllerTest extends MockMvcTest {
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andDo(MockMvcResultHandlers.print()).andDo(MockMvcResultHandlers.print()).andReturn().getResponse().getContentAsString();
             JSONObject jsonObject = new JSONObject(result);
-            this.mockMvc.perform(MockMvcRequestBuilders.get(jsonObject.getString("viewUrl"))).andExpect(MockMvcResultMatchers.status().isOk());
+            this.mockMvc.perform(MockMvcRequestBuilders.get("/file/view/{0}", jsonObject.getString("filename"))).andExpect(MockMvcResultMatchers.status().isOk());
         }
     }
 }
