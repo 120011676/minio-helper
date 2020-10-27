@@ -13,13 +13,13 @@ public class MinIOServerClientProperties {
     /**
      * minio server 查看uri
      */
-    private String viewUri;
+    private String viewUri = "/file/view";
     /**
      * minio server 下载uri
      */
-    private String downloadUri;
+    private String downloadUri = "/file/download";
     /**
      * minio server 预下载uri
      */
-    private String downloadByUri;
+    private String downloadByUri = "/file/downloadByUrl";
 }
