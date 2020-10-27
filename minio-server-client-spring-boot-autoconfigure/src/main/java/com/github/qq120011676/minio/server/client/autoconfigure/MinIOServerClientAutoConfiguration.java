@@ -10,6 +10,9 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
 
+/**
+ * 自动装配类
+ */
 @Configuration
 @ConditionalOnClass(MinIOServerClient.class)
 @EnableConfigurationProperties(MinIOServerClientProperties.class)
@@ -17,6 +20,11 @@ public class MinIOServerClientAutoConfiguration {
     @Resource
     private MinIOServerClientProperties minIOServerClientProperties;
 
+    /**
+     * MinIOServerClient对象装配生成
+     *
+     * @return MinIOServerClient对象
+     */
     @Bean
     @ConditionalOnMissingBean(MinIOServerClient.class)
     public MinIOServerClient minIOServerClient() {

@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * 文件上传Controller
+ */
 @RestController
 @RequestMapping("file")
 public class FileController {
@@ -34,6 +37,22 @@ public class FileController {
     @Resource
     private RestfulExceptionHelper restfulExceptionHelper;
 
+    /**
+     * 文件上传（单个）
+     *
+     * @param file 上传文件
+     * @return 响应UploadEntity对象
+     * @throws IOException                异常
+     * @throws InvalidKeyException        异常
+     * @throws InvalidResponseException   异常
+     * @throws InsufficientDataException  异常
+     * @throws NoSuchAlgorithmException   异常
+     * @throws ServerException            异常
+     * @throws InternalException          异常
+     * @throws XmlParserException         异常
+     * @throws InvalidBucketNameException 异常
+     * @throws ErrorResponseException     异常
+     */
     @PostMapping("upload")
     public UploadEntity upload(MultipartFile file) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
         if (file.isEmpty()) {
@@ -52,6 +71,22 @@ public class FileController {
         return new UploadEntity(objectName);
     }
 
+    /**
+     * 下载文件
+     *
+     * @param filename 文件名称
+     * @return 响应
+     * @throws IOException                异常
+     * @throws InvalidKeyException        异常
+     * @throws InvalidResponseException   异常
+     * @throws InsufficientDataException  异常
+     * @throws NoSuchAlgorithmException   异常
+     * @throws ServerException            异常
+     * @throws InternalException          异常
+     * @throws XmlParserException         异常
+     * @throws InvalidBucketNameException 异常
+     * @throws ErrorResponseException     异常
+     */
     @GetMapping(value = "download/{filename}")
     public ResponseEntity<InputStreamResource> download(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
         var builder = StatObjectArgs.builder();

@@ -28,6 +28,9 @@ import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.*;
 
+/**
+ * 上传、下载、查看Controller类
+ */
 @RestController
 @RequestMapping("file")
 public class MinioController {
@@ -40,11 +43,43 @@ public class MinioController {
     @Resource
     private AppConfig appConfig;
 
+    /**
+     * 上传接口（单个）
+     *
+     * @param file 上传文件
+     * @return 响应
+     * @throws IOException                异常
+     * @throws InvalidResponseException   异常
+     * @throws InvalidKeyException        异常
+     * @throws NoSuchAlgorithmException   异常
+     * @throws ServerException            异常
+     * @throws ErrorResponseException     异常
+     * @throws XmlParserException         异常
+     * @throws InvalidBucketNameException 异常
+     * @throws InsufficientDataException  异常
+     * @throws InternalException          异常
+     */
     @PostMapping("upload")
     public UploadViewEntity upload(MultipartFile file) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InvalidBucketNameException, InsufficientDataException, InternalException {
         return this.minioUpload(file, "/file/upload");
     }
 
+    /**
+     * 上传接口（多个）
+     *
+     * @param files 上传文件
+     * @return 响应
+     * @throws IOException                异常
+     * @throws InvalidResponseException   异常
+     * @throws InvalidKeyException        异常
+     * @throws NoSuchAlgorithmException   异常
+     * @throws ServerException            异常
+     * @throws ErrorResponseException     异常
+     * @throws XmlParserException         异常
+     * @throws InvalidBucketNameException 异常
+     * @throws InsufficientDataException  异常
+     * @throws InternalException          异常
+     */
     @PostMapping("uploads")
     public List<UploadViewEntity> uploads(MultipartFile[] files) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InvalidBucketNameException, InsufficientDataException, InternalException {
         if (files == null) {
@@ -99,6 +134,22 @@ public class MinioController {
         return this.minioClient.statObject(builder.object(filename).build());
     }
 
+    /**
+     * 查看图片接口
+     *
+     * @param filename 文件名称
+     * @return 响应
+     * @throws IOException                异常
+     * @throws InvalidKeyException        异常
+     * @throws InvalidResponseException   异常
+     * @throws InsufficientDataException  异常
+     * @throws NoSuchAlgorithmException   异常
+     * @throws ServerException            异常
+     * @throws InternalException          异常
+     * @throws XmlParserException         异常
+     * @throws InvalidBucketNameException 异常
+     * @throws ErrorResponseException     异常
+     */
     @RequestMapping("view/{filename}")
     public ResponseEntity<InputStreamResource> view(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
         filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
@@ -114,6 +165,23 @@ public class MinioController {
                 .body(new InputStreamResource(this.minioClient.getObject(builderGet.object(filename).build())));
     }
 
+    /**
+     * 预下载
+     *
+     * @param filename 文件名称
+     * @return 响应
+     * @throws IOException                  异常
+     * @throws InvalidKeyException          异常
+     * @throws InvalidResponseException     异常
+     * @throws InsufficientDataException    异常
+     * @throws InvalidExpiresRangeException 异常
+     * @throws ServerException              异常
+     * @throws InternalException            异常
+     * @throws NoSuchAlgorithmException     异常
+     * @throws XmlParserException           异常
+     * @throws InvalidBucketNameException   异常
+     * @throws ErrorResponseException       异常
+     */
     @RequestMapping("downloadByUrl/{filename}")
     public DownloadViewEntity downloadByUrl(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, InvalidExpiresRangeException, ServerException, InternalException, NoSuchAlgorithmException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
         filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
@@ -127,6 +195,22 @@ public class MinioController {
         return downloadView;
     }
 
+    /**
+     * 下载
+     *
+     * @param filename 文件名称
+     * @return 响应
+     * @throws IOException                异常
+     * @throws InvalidKeyException        异常
+     * @throws InvalidResponseException   异常
+     * @throws InsufficientDataException  异常
+     * @throws NoSuchAlgorithmException   异常
+     * @throws ServerException            异常
+     * @throws InternalException          异常
+     * @throws XmlParserException         异常
+     * @throws InvalidBucketNameException 异常
+     * @throws ErrorResponseException     异常
+     */
     @GetMapping("download/{filename}")
     public ResponseEntity<InputStreamResource> download(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
         filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);

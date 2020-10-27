@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * 自动装配类
+ */
 @Configuration
 @ConditionalOnClass(MinioClient.class)
 @EnableConfigurationProperties(MinIOProperties.class)
@@ -24,6 +27,22 @@ public class MinIOAutoConfiguration {
     @Resource
     private MinIOProperties minIOProperties;
 
+    /**
+     * 自动装配生成对象方法
+     *
+     * @return MinioClient对象
+     * @throws IOException                异常
+     * @throws InvalidKeyException        异常
+     * @throws InvalidResponseException   异常
+     * @throws InsufficientDataException  异常
+     * @throws NoSuchAlgorithmException   异常
+     * @throws ServerException            异常
+     * @throws InternalException          异常
+     * @throws XmlParserException         异常
+     * @throws InvalidBucketNameException 异常
+     * @throws ErrorResponseException     异常
+     * @throws RegionConflictException    异常
+     */
     @Bean
     @ConditionalOnMissingBean(MinioClient.class)
     public MinioClient minioClient() throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException, RegionConflictException {

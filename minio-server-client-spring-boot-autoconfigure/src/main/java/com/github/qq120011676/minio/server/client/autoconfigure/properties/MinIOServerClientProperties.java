@@ -3,6 +3,9 @@ package com.github.qq120011676.minio.server.client.autoconfigure.properties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * 自动装配配置类
+ */
 @Data
 @ConfigurationProperties(prefix = "minio.server")
 public class MinIOServerClientProperties {
