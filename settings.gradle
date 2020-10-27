@@ -13,3 +13,7 @@ include 'minio-spring-boot-autoconfigure'
 include 'minio-spring-boot-starter'
 include 'minio-spring-controller'
 include 'minio-server'
+include 'minio-server-client'
+include 'minio-server-client-spring-boot-autoconfigure'
+include 'minio-server-client-spring-boot-starter'
+

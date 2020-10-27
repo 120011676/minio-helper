@@ -1,0 +1,3 @@
+dependencies {
+    implementation project(":minio-server-client-spring-boot-autoconfigure")
+}
