@@ -13,7 +13,7 @@ description = 'minio helper'
 
 allprojects {
     group = 'com.github.120011676'
-    version = '7.0.0'
+    version = '8.0.1'
 
     repositories {
         mavenCentral()
