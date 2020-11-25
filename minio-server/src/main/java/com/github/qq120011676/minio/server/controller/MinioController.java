@@ -48,19 +48,18 @@ public class MinioController {
      *
      * @param file 上传文件
      * @return 响应
-     * @throws IOException                异常
-     * @throws InvalidResponseException   异常
-     * @throws InvalidKeyException        异常
-     * @throws NoSuchAlgorithmException   异常
-     * @throws ServerException            异常
-     * @throws ErrorResponseException     异常
-     * @throws XmlParserException         异常
-     * @throws InvalidBucketNameException 异常
-     * @throws InsufficientDataException  异常
-     * @throws InternalException          异常
+     * @throws IOException               异常
+     * @throws InvalidResponseException  异常
+     * @throws InvalidKeyException       异常
+     * @throws NoSuchAlgorithmException  异常
+     * @throws ServerException           异常
+     * @throws ErrorResponseException    异常
+     * @throws XmlParserException        异常
+     * @throws InsufficientDataException 异常
+     * @throws InternalException         异常
      */
     @PostMapping("upload")
-    public UploadViewEntity upload(MultipartFile file) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InvalidBucketNameException, InsufficientDataException, InternalException {
+    public UploadViewEntity upload(MultipartFile file) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InsufficientDataException, InternalException {
         return this.minioUpload(file, "/file/upload");
     }
 
@@ -69,19 +68,18 @@ public class MinioController {
      *
      * @param files 上传文件
      * @return 响应
-     * @throws IOException                异常
-     * @throws InvalidResponseException   异常
-     * @throws InvalidKeyException        异常
-     * @throws NoSuchAlgorithmException   异常
-     * @throws ServerException            异常
-     * @throws ErrorResponseException     异常
-     * @throws XmlParserException         异常
-     * @throws InvalidBucketNameException 异常
-     * @throws InsufficientDataException  异常
-     * @throws InternalException          异常
+     * @throws IOException               异常
+     * @throws InvalidResponseException  异常
+     * @throws InvalidKeyException       异常
+     * @throws NoSuchAlgorithmException  异常
+     * @throws ServerException           异常
+     * @throws ErrorResponseException    异常
+     * @throws XmlParserException        异常
+     * @throws InsufficientDataException 异常
+     * @throws InternalException         异常
      */
     @PostMapping("uploads")
-    public List<UploadViewEntity> uploads(MultipartFile[] files) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InvalidBucketNameException, InsufficientDataException, InternalException {
+    public List<UploadViewEntity> uploads(MultipartFile[] files) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InsufficientDataException, InternalException {
         if (files == null) {
             throw this.restfulExceptionHelper.getRestfulRuntimeException("upload_no_file");
         }
@@ -97,7 +95,7 @@ public class MinioController {
         return uploadViews;
     }
 
-    private UploadViewEntity minioUpload(MultipartFile file, String uri) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
+    private UploadViewEntity minioUpload(MultipartFile file, String uri) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         if (file.isEmpty()) {
             throw this.restfulExceptionHelper.getRestfulRuntimeException("upload_no_file");
         }
@@ -109,7 +107,7 @@ public class MinioController {
             builder.bucket(this.minIOProperties.getBucket());
         }
         try (InputStream in = file.getInputStream()) {
-            this.minioClient.putObject(builder.contentType(file.getContentType()).extraHeaders(map).object(objectName).stream(in, file.getSize(), -1).build());
+            this.minioClient.putObject(builder.contentType(file.getContentType()).userMetadata(map).object(objectName).stream(in, file.getSize(), -1).build());
         }
         UploadViewEntity uploadView = new UploadViewEntity();
         objectName = URLEncoder.encode(objectName, StandardCharsets.UTF_8);
@@ -125,7 +123,7 @@ public class MinioController {
         return uploadView;
     }
 
-    private ObjectStat statObject(String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
+    private StatObjectResponse statObject(String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
         var builder = StatObjectArgs.builder();
         if (StringUtils.hasText(this.minIOProperties.getBucket())) {
@@ -134,24 +132,32 @@ public class MinioController {
         return this.minioClient.statObject(builder.object(filename).build());
     }
 
+    private GetObjectResponse getObject(String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
+        filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
+        var builder = GetObjectArgs.builder();
+        if (StringUtils.hasText(this.minIOProperties.getBucket())) {
+            builder.bucket(this.minIOProperties.getBucket());
+        }
+        return this.minioClient.getObject(builder.object(filename).build());
+    }
+
     /**
      * 查看图片接口
      *
      * @param filename 文件名称
      * @return 响应
-     * @throws IOException                异常
-     * @throws InvalidKeyException        异常
-     * @throws InvalidResponseException   异常
-     * @throws InsufficientDataException  异常
-     * @throws NoSuchAlgorithmException   异常
-     * @throws ServerException            异常
-     * @throws InternalException          异常
-     * @throws XmlParserException         异常
-     * @throws InvalidBucketNameException 异常
-     * @throws ErrorResponseException     异常
+     * @throws IOException               异常
+     * @throws InvalidKeyException       异常
+     * @throws InvalidResponseException  异常
+     * @throws InsufficientDataException 异常
+     * @throws NoSuchAlgorithmException  异常
+     * @throws ServerException           异常
+     * @throws InternalException         异常
+     * @throws XmlParserException        异常
+     * @throws ErrorResponseException    异常
      */
     @RequestMapping("view/{filename}")
-    public ResponseEntity<InputStreamResource> view(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
+    public ResponseEntity<InputStreamResource> view(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
         var objectStat = this.statObject(filename);
         var builderGet = GetObjectArgs.builder();
@@ -160,7 +166,7 @@ public class MinioController {
         }
         return ResponseEntity
                 .ok()
-                .contentLength(objectStat.length())
+                .contentLength(objectStat.size())
                 .contentType(MediaType.valueOf(objectStat.contentType()))
                 .body(new InputStreamResource(this.minioClient.getObject(builderGet.object(filename).build())));
     }
@@ -170,20 +176,18 @@ public class MinioController {
      *
      * @param filename 文件名称
      * @return 响应
-     * @throws IOException                  异常
-     * @throws InvalidKeyException          异常
-     * @throws InvalidResponseException     异常
-     * @throws InsufficientDataException    异常
-     * @throws InvalidExpiresRangeException 异常
-     * @throws ServerException              异常
-     * @throws InternalException            异常
-     * @throws NoSuchAlgorithmException     异常
-     * @throws XmlParserException           异常
-     * @throws InvalidBucketNameException   异常
-     * @throws ErrorResponseException       异常
+     * @throws IOException               异常
+     * @throws InvalidKeyException       异常
+     * @throws InvalidResponseException  异常
+     * @throws InsufficientDataException 异常
+     * @throws ServerException           异常
+     * @throws InternalException         异常
+     * @throws NoSuchAlgorithmException  异常
+     * @throws XmlParserException        异常
+     * @throws ErrorResponseException    异常
      */
     @RequestMapping("downloadByUrl/{filename}")
-    public DownloadViewEntity downloadByUrl(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, InvalidExpiresRangeException, ServerException, InternalException, NoSuchAlgorithmException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
+    public DownloadViewEntity downloadByUrl(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, ServerException, InternalException, NoSuchAlgorithmException, XmlParserException, ErrorResponseException {
         filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
         var builder = GetPresignedObjectUrlArgs.builder();
         if (StringUtils.hasText(this.minIOProperties.getBucket())) {
@@ -200,29 +204,28 @@ public class MinioController {
      *
      * @param filename 文件名称
      * @return 响应
-     * @throws IOException                异常
-     * @throws InvalidKeyException        异常
-     * @throws InvalidResponseException   异常
-     * @throws InsufficientDataException  异常
-     * @throws NoSuchAlgorithmException   异常
-     * @throws ServerException            异常
-     * @throws InternalException          异常
-     * @throws XmlParserException         异常
-     * @throws InvalidBucketNameException 异常
-     * @throws ErrorResponseException     异常
+     * @throws IOException               异常
+     * @throws InvalidKeyException       异常
+     * @throws InvalidResponseException  异常
+     * @throws InsufficientDataException 异常
+     * @throws NoSuchAlgorithmException  异常
+     * @throws ServerException           异常
+     * @throws InternalException         异常
+     * @throws XmlParserException        异常
+     * @throws ErrorResponseException    异常
      */
     @GetMapping("download/{filename}")
-    public ResponseEntity<InputStreamResource> download(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
+    public ResponseEntity<InputStreamResource> download(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
-        var objectStat = this.statObject(filename);
-        String saveFilename = objectStat.name();
+        String saveFilename = null;
         String[] filenameArray = filename.split("_", 2);
         if (filenameArray.length > 1) {
             saveFilename = filenameArray[1];
         }
-        List<String> filenames = objectStat.httpHeaders().get("x-amz-meta-filename");
-        if (filenames != null && !filenames.isEmpty()) {
-            saveFilename = filenames.get(0);
+        var objectStat = this.statObject(filename);
+        String objectFilename = objectStat.userMetadata().get("filename");
+        if (StringUtils.hasText(objectFilename)) {
+            saveFilename = objectFilename;
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", MessageFormat.format("attachment; filename=\"{0}\"", saveFilename));

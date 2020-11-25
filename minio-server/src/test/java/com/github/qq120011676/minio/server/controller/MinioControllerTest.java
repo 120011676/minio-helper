@@ -18,13 +18,31 @@ public class MinioControllerTest extends MockMvcTest {
     @Test
     public void upload() throws Exception {
         var file = new File("/Users/say/Downloads/05G@C7$[3XQ7XVCCYYP7]W6.jpg");
+        String result;
         try (var fin = new FileInputStream(file)) {
-            String result = this.mockMvc.perform(MockMvcRequestBuilders.multipart("/file/upload")
+            result = this.mockMvc.perform(MockMvcRequestBuilders.multipart("/file/upload")
                     .file(new MockMultipartFile("file", file.getName(), Files.probeContentType(file.toPath()), fin)))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andDo(MockMvcResultHandlers.print()).andDo(MockMvcResultHandlers.print()).andReturn().getResponse().getContentAsString();
-            JSONObject jsonObject = new JSONObject(result);
-            this.mockMvc.perform(MockMvcRequestBuilders.get("/file/view/{0}", jsonObject.getString("filename"))).andExpect(MockMvcResultMatchers.status().isOk());
         }
+        JSONObject jsonObject = new JSONObject(result);
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/file/view/{0}", jsonObject.getString("filename"))).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void uploadChinese() throws Exception {
+        var file = new File("/Users/say/Downloads/中文.jpg");
+        String result;
+        try (var fin = new FileInputStream(file)) {
+            result = this.mockMvc.perform(MockMvcRequestBuilders.multipart("/file/upload")
+                    .file(new MockMultipartFile("file", file.getName(), Files.probeContentType(file.toPath()), fin)))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andDo(MockMvcResultHandlers.print()).andDo(MockMvcResultHandlers.print()).andReturn().getResponse().getContentAsString();
+        }
+        JSONObject jsonObject = new JSONObject(result);
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/file/download/{0}", jsonObject.getString("filename"))).andExpect(MockMvcResultMatchers.status().isOk()).andDo(result1 -> {
+            System.out.println("===header==");
+            System.out.println(result1.getResponse().getHeaderNames());
+        });
     }
 }

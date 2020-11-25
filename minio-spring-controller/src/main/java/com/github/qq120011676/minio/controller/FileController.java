@@ -42,19 +42,18 @@ public class FileController {
      *
      * @param file 上传文件
      * @return 响应UploadEntity对象
-     * @throws IOException                异常
-     * @throws InvalidKeyException        异常
-     * @throws InvalidResponseException   异常
-     * @throws InsufficientDataException  异常
-     * @throws NoSuchAlgorithmException   异常
-     * @throws ServerException            异常
-     * @throws InternalException          异常
-     * @throws XmlParserException         异常
-     * @throws InvalidBucketNameException 异常
-     * @throws ErrorResponseException     异常
+     * @throws IOException               异常
+     * @throws InvalidKeyException       异常
+     * @throws InvalidResponseException  异常
+     * @throws InsufficientDataException 异常
+     * @throws NoSuchAlgorithmException  异常
+     * @throws ServerException           异常
+     * @throws InternalException         异常
+     * @throws XmlParserException        异常
+     * @throws ErrorResponseException    异常
      */
     @PostMapping("upload")
-    public UploadEntity upload(MultipartFile file) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
+    public UploadEntity upload(MultipartFile file) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         if (file.isEmpty()) {
             throw this.restfulExceptionHelper.getRestfulRuntimeException("upload_no_file");
         }
@@ -76,27 +75,26 @@ public class FileController {
      *
      * @param filename 文件名称
      * @return 响应
-     * @throws IOException                异常
-     * @throws InvalidKeyException        异常
-     * @throws InvalidResponseException   异常
-     * @throws InsufficientDataException  异常
-     * @throws NoSuchAlgorithmException   异常
-     * @throws ServerException            异常
-     * @throws InternalException          异常
-     * @throws XmlParserException         异常
-     * @throws InvalidBucketNameException 异常
-     * @throws ErrorResponseException     异常
+     * @throws IOException               异常
+     * @throws InvalidKeyException       异常
+     * @throws InvalidResponseException  异常
+     * @throws InsufficientDataException 异常
+     * @throws NoSuchAlgorithmException  异常
+     * @throws ServerException           异常
+     * @throws InternalException         异常
+     * @throws XmlParserException        异常
+     * @throws ErrorResponseException    异常
      */
     @GetMapping(value = "download/{filename}")
-    public ResponseEntity<InputStreamResource> download(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, InvalidBucketNameException, ErrorResponseException {
+    public ResponseEntity<InputStreamResource> download(@PathVariable String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
         var builder = StatObjectArgs.builder();
         if (StringUtils.hasText(this.minIOProperties.getBucket())) {
             builder.bucket(this.minIOProperties.getBucket());
         }
-        ObjectStat objectStat = this.minioClient.statObject(builder.object(filename).build());
-        String saveFilename = objectStat.name();
-        List<String> filenames = objectStat.httpHeaders().get("x-amz-meta-filename");
-        if (filenames != null && !filenames.isEmpty()) {
+        StatObjectResponse objectStat = this.minioClient.statObject(builder.object(filename).build());
+        String saveFilename = null;
+        List<String> filenames = objectStat.headers().values("x-amz-meta-filename");
+        if (!filenames.isEmpty()) {
             saveFilename = filenames.get(0);
         }
         HttpHeaders headers = new HttpHeaders();
